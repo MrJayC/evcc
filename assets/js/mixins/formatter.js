@@ -1,8 +1,8 @@
 export default {
   data: function () {
     return {
-      fmtLimit: 100,
-      fmtDigits: 1,
+      fmtLimit: 1000,
+      fmtDigits: 2,
     };
   },
   methods: {
