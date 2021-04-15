@@ -1,5 +1,5 @@
 # STEP 1 build ui
-FROM node:14-alpine as node
+FROM node:14-alpine3.12 as node
 
 RUN apk update && apk add --no-cache make
 
@@ -18,7 +18,7 @@ RUN make clean ui
 
 
 # STEP 2 build executable binary
-FROM golang:1.16-alpine as builder
+FROM golang:1.16-alpine3.12 as builder
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
@@ -46,7 +46,7 @@ RUN make build
 
 
 # STEP 3 build a small image including module support
-FROM alpine:3.13
+FROM alpine:3.12
 
 WORKDIR /app
 
@@ -57,7 +57,7 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /build/evcc /usr/local/bin/evcc
 
-COPY entrypoint.sh /app/
+COPY docker/bin/entrypoint.sh /app/
 
 # UI and /api
 EXPOSE 7070/tcp
