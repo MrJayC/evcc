@@ -912,6 +912,13 @@ func (lp *LoadPoint) Update(sitePower float64) {
 	// phase detection
 	lp.detectPhases()
 
+	// check pv power and handle pv timers
+	var targetCurrent float64
+	if mode == api.ModeMinPV || mode == api.ModePV {
+		targetCurrent := lp.pvMaxCurrent(mode, sitePower)
+		lp.log.DEBUG.Printf("pv max charge current: %.2gA", targetCurrent)
+	}
+
 	// check if car connected and ready for charging
 	var err error
 
@@ -956,9 +963,6 @@ func (lp *LoadPoint) Update(sitePower float64) {
 		err = lp.setLimit(targetCurrent, false)
 
 	case mode == api.ModeMinPV || mode == api.ModePV:
-		targetCurrent := lp.pvMaxCurrent(mode, sitePower)
-		lp.log.DEBUG.Printf("pv max charge current: %.2gA", targetCurrent)
-
 		var required bool // false
 		if targetCurrent == 0 && lp.climateActive() {
 			targetCurrent = float64(lp.MinCurrent)
