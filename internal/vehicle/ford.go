@@ -203,8 +203,7 @@ func (v *Ford) vehicles() ([]string, error) {
 func (v *Ford) status() (res fordVehicleStatus, err error) {
 	// follow up requested refresh
 	if v.refreshId != "" {
-		res, err := v.refreshResult()
-		if errors.Is(err, api.ErrMustRetry) && time.Since(v.refreshTime) > fordRefreshTimeout {
+		if res, err = v.refreshResult(); err != nil && time.Since(v.refreshTime) > fordRefreshTimeout {
 			v.refreshId = ""
 			err = api.ErrTimeout
 		}
